@@ -1,17 +1,27 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import sgMail from '@sendgrid/mail';
+import * as sgMail from '@sendgrid/mail';
+import * as handlebars from 'handlebars';
+import { Knex } from 'knex';
 
 export type sentMailType = (
-  type: string,
+  action: string,
+  module: string,
   {
     to,
     from,
+    data,
   }: {
     to: string[];
     from: string;
+    data: any;
   },
   configService: ConfigService,
+  conn: Knex,
 ) => Promise<boolean>;
 
 /**
@@ -21,18 +31,37 @@ export type sentMailType = (
  * @returns
  */
 export const sendEmail: sentMailType = async (
-  type: string,
+  action: string,
+  module: string,
   {
     to,
     from,
+    data,
   }: {
     to: string[];
     from: string;
+    data: any;
   },
   configService: ConfigService,
+  conn: Knex,
 ) => {
-  sgMail.setApiKey(configService.get<string>('SENDGRID_API_KEY'));
-  const msg = { to, from, subject: '', text: '', html: '' };
+  const template = await conn
+    .from('notification-template')
+    .where({ action, module, type: 'email' })
+    .first();
+  if (template?.id) {
+    throw new NotFoundException('Template not found');
+  }
+  const emailTemplate = handlebars.compile(template.html);
+  const body = emailTemplate(data);
+  template.sgMail.setApiKey(configService.get<string>('SENDGRID_API_KEY'));
+  const msg = {
+    to,
+    from,
+    subject: template.subject,
+    text: template.text,
+    html: body,
+  };
   try {
     await sgMail.send(msg);
     return true;
@@ -47,22 +76,29 @@ export const sendEmailProvider: { provide: string; useFactory: sentMailType } =
   {
     provide: 'SEND_EMAIL',
     useFactory: (
-      type: string,
+      action: string,
+      module: string,
       {
         to,
         from,
+        data,
       }: {
         to: string[];
         from: string;
+        data: any;
       },
       configService: ConfigService,
+      conn: Knex,
     ) =>
       sendEmail(
-        type,
+        action,
+        module,
         {
           to,
           from,
+          data,
         },
         configService,
+        conn,
       ),
   };

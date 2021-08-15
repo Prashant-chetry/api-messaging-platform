@@ -5,10 +5,24 @@ import { UsersRepository } from './users.repository';
 import { UserCommandHandlers } from './commands/handlers';
 import { UserEventHandlers } from './events/handlers';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ConfigModule } from '@nestjs/config';
+import { configuration } from 'src/configuration';
+import { KeycloakManagementModule } from 'src/keycloak-managment/keycloak-management.module';
+import { UserSagas } from './sages/user.sage';
 
 @Module({
-  imports: [KnexConnectionModule, CqrsModule],
+  imports: [
+    KnexConnectionModule,
+    CqrsModule,
+    ConfigModule.forRoot({ load: [configuration] }),
+    KeycloakManagementModule,
+  ],
   controllers: [UsersController],
-  providers: [UsersRepository, ...UserCommandHandlers, ...UserEventHandlers],
+  providers: [
+    UsersRepository,
+    ...UserCommandHandlers,
+    ...UserEventHandlers,
+    UserSagas,
+  ],
 })
 export class UsersModule {}

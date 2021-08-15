@@ -42,8 +42,9 @@ export class UsersRepository {
    * @param user user creation payload
    * @returns
    */
-  async createUserWithKeycloak(
+  async createWithKeycloakId(
     user: CreateUserDTO,
+    keycloakId: string,
     conn?: Knex,
   ): Promise<CreatedResponseDTO> {
     conn = conn || this.conn;
@@ -68,10 +69,6 @@ export class UsersRepository {
       let resp: CreatedResponseDTO;
       await this.conn.transaction(async (trx) => {
         /**
-         * ! create account in keycloak
-         */
-
-        /**
          * creating user in db
          */
         [resp] = await trx
@@ -83,6 +80,7 @@ export class UsersRepository {
             email: user.email,
             mobile_number: user.mobile?.number,
             mobile_code: user.mobile?.code,
+            keycloak_id: keycloakId,
           })
           .into(this._tableName)
           .returning(['id', 'created_at']);
@@ -90,7 +88,9 @@ export class UsersRepository {
       const { id, created_at } = resp;
       return { id, created_at };
     } catch (error) {
-      this._logger.error(`error: ${error}`);
+      this._logger.error(
+        `Error in createWithKeycloakId method, error: ${error}`,
+      );
       throw new InternalServerErrorException('Failed to create user');
     }
   }
@@ -117,7 +117,7 @@ export class UsersRepository {
       )
       .from(this._tableName)
       .catch((error) => {
-        this._logger.error(`getUserById method, error: ${error}`);
+        this._logger.error(`Error in getUserById method, error: ${error}`);
         throw new InternalServerErrorException('Failed to get user');
       });
 
@@ -140,7 +140,7 @@ export class UsersRepository {
       .where({ id })
       .del('id')
       .catch((error) => {
-        this._logger.error(`deleteUser method, error: ${error}`);
+        this._logger.error(`Error in deleteUser method, error: ${error}`);
         throw new InternalServerErrorException('Failed to delete user');
       });
     if (!doc?.id) {
@@ -174,7 +174,7 @@ export class UsersRepository {
       .update({ ..._payload, updated_by: userId })
       .returning(['id', 'updated_at'])
       .catch((error) => {
-        this._logger.error(`updateUser method, error: ${error}`);
+        this._logger.error(`Error in updateUser method, error: ${error}`);
         throw new InternalServerErrorException('Failed to update user');
       });
     if (!doc?.id) {
