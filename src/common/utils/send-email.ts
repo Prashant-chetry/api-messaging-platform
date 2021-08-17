@@ -46,15 +46,15 @@ export const sendEmail: sentMailType = async (
   conn: Knex,
 ) => {
   const template = await conn
-    .from('notification-template')
+    .from('notification-templates')
     .where({ action, module, type: 'email' })
     .first();
-  if (template?.id) {
+  if (!template?.id) {
     throw new NotFoundException('Template not found');
   }
-  const emailTemplate = handlebars.compile(template.html);
+  const emailTemplate = handlebars.compile(template.body);
   const body = emailTemplate(data);
-  template.sgMail.setApiKey(configService.get<string>('SENDGRID_API_KEY'));
+  sgMail.setApiKey(configService.get<string>('SENDGRID_API_KEY'));
   const msg = {
     to,
     from,
