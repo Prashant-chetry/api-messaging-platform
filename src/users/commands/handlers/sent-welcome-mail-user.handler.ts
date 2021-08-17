@@ -25,13 +25,13 @@ export class SentWelcomeMailToUserCommandHandler
     );
 
     if (userDoc.welcome_mail_sent) return;
-    const action = 'user_welcome_mail';
     await sendEmail(
-      action,
+      'creation',
       'users',
       {
         to: [userDoc.email],
         from: this.configService.get<string>('SENDGRID_SENDER'),
+        data: { firstName: userDoc.first_name || userDoc.email },
       },
       this.configService,
       this.conn,

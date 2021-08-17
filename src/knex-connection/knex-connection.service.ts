@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Knex } from 'knex';
-
+const knexConfig = require('../../knexfile');
 /**
  * Service layer for knex connection
  */
@@ -17,26 +17,10 @@ export class KnexConnectionService {
    * @returns
    */
   getKnex() {
-    const database = this.configService.get<string>('DATABASE_NAME');
-    const dbUser = this.configService.get<string>('DATABASE_USER');
-    const dbPassword = this.configService.get<string>('DATABASE_PASSWORD');
-    console.log(dbPassword, dbUser);
+    const environment = this.configService.get<string>('DB_ENV');
+    console.log(knexConfig[environment]);
     if (!this._knexConnection) {
-      this._knexConnection = require('knex')({
-        client: 'postgresql',
-        connection: {
-          database,
-          user: dbUser,
-          password: dbPassword,
-        },
-        pool: {
-          min: 2,
-          max: 10,
-        },
-        migrations: {
-          tableName: 'knex_migrations',
-        },
-      });
+      this._knexConnection = require('knex')(knexConfig[environment]);
       this._logger.log(`knex connection created`);
     }
     return this._knexConnection;
