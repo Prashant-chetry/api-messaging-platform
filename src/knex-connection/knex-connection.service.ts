@@ -18,7 +18,6 @@ export class KnexConnectionService {
    */
   getKnex() {
     const environment = this.configService.get<string>('DB_ENV');
-    console.log(knexConfig[environment]);
     if (!this._knexConnection) {
       this._knexConnection = require('knex')(knexConfig[environment]);
       this._logger.log(`knex connection created`);

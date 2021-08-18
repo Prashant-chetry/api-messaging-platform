@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { UsersRepository } from 'src/users/users.repository';
 import { UserCreatedEvent } from '../imlps/user-created.event';
@@ -6,9 +7,12 @@ import { UserCreatedEvent } from '../imlps/user-created.event';
 export class UserCreatedEventHandler
   implements IEventHandler<UserCreatedEvent>
 {
-  constructor(private readonly userRepository: UsersRepository) {}
+  private readonly _logger: Logger;
+  constructor(private readonly userRepository: UsersRepository) {
+    this._logger = new Logger('UserCreatedEventHandler');
+  }
   async handle(event: UserCreatedEvent) {
     const user = await this.userRepository.getUserById(event.userId);
-    console.log(user);
+    this._logger.log(user);
   }
 }
