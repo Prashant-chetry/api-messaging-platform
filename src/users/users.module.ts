@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { configuration } from 'src/configuration';
 import { KeycloakManagementModule } from 'src/keycloak-managment/keycloak-management.module';
 import { UserSagas } from './sages/user.sage';
+import { UserQueryHandlers } from './queries/handlers';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserSagas } from './sages/user.sage';
     UsersRepository,
     ...UserCommandHandlers,
     ...UserEventHandlers,
+    ...UserQueryHandlers,
     UserSagas,
   ],
 })
