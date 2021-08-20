@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsEmail,
+  ValidateNested,
+} from 'class-validator';
 import { MobileWithCode } from '../../common/dto/index';
 
 export class CreateUserDTO {
@@ -19,6 +25,7 @@ export class CreateUserDTO {
 
   // @ApiPropertyOptional({ type: MobileWithCode })
   @IsOptional()
+  @ValidateNested()
   mobile?: MobileWithCode;
 
   // @ApiProperty()
