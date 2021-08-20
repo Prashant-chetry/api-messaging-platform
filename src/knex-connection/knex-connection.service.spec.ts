@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KnexConnectionService } from './knex-connection.service';
 
@@ -6,6 +7,7 @@ describe('KnexConnectionService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ load: [() => ({ DB_ENV: '' })] })],
       providers: [KnexConnectionService],
     }).compile();
 

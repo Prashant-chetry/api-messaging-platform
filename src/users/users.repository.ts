@@ -15,8 +15,8 @@ import {
   DeletedResponseDTO,
   UpdatedResponseDTO,
   ViewResponseDTO,
-} from 'src/common/dto';
-import { KNEX_CONNECTION } from 'src/knex-connection/knex-connection.provider';
+} from '../common/dto';
+import { KNEX_CONNECTION } from '../knex-connection/knex-connection.provider';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserDataDTO } from './dto/get-user.dto';
 
@@ -108,7 +108,7 @@ export class UsersRepository {
     conn?: Knex,
   ): Promise<ViewResponseDTO<UserDataDTO>> {
     conn = conn || this.conn;
-    const user = await conn
+    const user: UserDataDTO = await conn
       .where({ id })
       .first(
         Array.isArray(columns) && columns?.length
@@ -124,8 +124,8 @@ export class UsersRepository {
     if (!user?.id) {
       throw new NotFoundException('User not found');
     }
-    const data = user as unknown as UserDataDTO;
-    return { data };
+
+    return { data: user };
   }
 
   /**
@@ -222,5 +222,31 @@ export class UsersRepository {
       }
     }
     return payload;
+  }
+
+  /**
+   * Method for getting user info using keycloak id
+   * @param keycloakId keycloak id
+   * @param conn knex connection
+   * @returns
+   */
+  async getUserByKeycloakId(
+    keycloakId: string,
+    conn?: Knex,
+  ): Promise<ViewResponseDTO<UserDataDTO>> {
+    conn = conn || this.conn;
+    const user: UserDataDTO = await conn
+      .where({ keycloak_id: keycloakId })
+      .first('*')
+      .from(this._tableName)
+      .catch((error) => {
+        this._logger.error(`Error in getUserById method, error: ${error}`);
+        throw new InternalServerErrorException('Failed to get user');
+      });
+
+    if (!user?.id) {
+      throw new NotFoundException('User not found');
+    }
+    return { data: user };
   }
 }

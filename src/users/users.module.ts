@@ -6,8 +6,8 @@ import { UserCommandHandlers } from './commands/handlers';
 import { UserEventHandlers } from './events/handlers';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfigModule } from '@nestjs/config';
-import { configuration } from 'src/configuration';
-import { KeycloakManagementModule } from 'src/keycloak-managment/keycloak-management.module';
+import { configuration } from '../configuration';
+import { KeycloakManagementModule } from '../keycloak-managment/keycloak-management.module';
 import { UserSagas } from './sages/user.sage';
 import { UserQueryHandlers } from './queries/handlers';
 

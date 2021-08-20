@@ -2,9 +2,9 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
-import { KeycloakUserService } from 'src/keycloak-managment/keycloak-user.service';
-import { UserCreatedEvent } from 'src/users/events/imlps';
-import { UsersRepository } from 'src/users/users.repository';
+import { KeycloakUserService } from '../../../keycloak-managment/keycloak-user.service';
+import { UserCreatedEvent } from '../../events/imlps';
+import { UsersRepository } from '../../users.repository';
 import { CreateUserUsingKeycloakId } from '../impls/create-user.command';
 
 @CommandHandler(CreateUserUsingKeycloakId)

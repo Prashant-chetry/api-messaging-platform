@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from '../../users.repository';
 import { DeleteUserCommand } from '../impls/delete-user.command';
 
 @CommandHandler(DeleteUserCommand)

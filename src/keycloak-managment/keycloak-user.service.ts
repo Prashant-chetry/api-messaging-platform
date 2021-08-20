@@ -12,6 +12,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { isJWT, isString, isUUID } from 'class-validator';
 import { GetPublicKeyOrSecret, verify, VerifyOptions } from 'jsonwebtoken';
+import { KeycloakTokenDecoded } from '../common/dto/index';
 import { CreateKeycloakUserDTO } from './dto/create-user-keycloak.dto';
 import { GetKeycloakUserDTO } from './dto/get-user.dto';
 import { KeycloakRealmService } from './keycloak-realm.service';
@@ -24,14 +25,19 @@ const jwtVerifyAsync = (
     | { key: string | Buffer; passphrase: string }
     | GetPublicKeyOrSecret,
   options?: VerifyOptions,
-) =>
+): Promise<KeycloakTokenDecoded> =>
   new Promise((resolve, reject) =>
-    verify(token, secretOrPublicKey, options, (error, decoded) => {
-      if (error) {
-        return reject(error);
-      }
-      return resolve(decoded);
-    }),
+    verify(
+      token,
+      secretOrPublicKey,
+      options,
+      (error, decoded: KeycloakTokenDecoded) => {
+        if (error) {
+          return reject(error);
+        }
+        return resolve(decoded);
+      },
+    ),
   );
 
 @Injectable()
@@ -104,7 +110,10 @@ export class KeycloakUserService extends KeycloakRealmService {
    *
    * Method for verifying keycloak user token of a realm
    */
-  async verifyToken(token: string, realm: string) {
+  async verifyToken(
+    token: string,
+    realm: string,
+  ): Promise<KeycloakTokenDecoded> {
     if (!isJWT(token) || !isString(realm) || !realm?.length) {
       throw new UnauthorizedException('Invalid token or realm');
     }

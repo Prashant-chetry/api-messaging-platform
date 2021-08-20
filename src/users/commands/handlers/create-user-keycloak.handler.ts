@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
 import { randomInt } from 'crypto';
-import { KeycloakUserService } from 'src/keycloak-managment/keycloak-user.service';
-import { UserCreatedEvent } from 'src/users/events/imlps';
-import { UsersRepository } from 'src/users/users.repository';
+import { KeycloakUserService } from '../../../keycloak-managment/keycloak-user.service';
+import { UserCreatedEvent } from '../../events/imlps';
+import { UsersRepository } from '../../users.repository';
 import { CreateUserAndInKeycloakCommand } from '../impls/create-user-keycloak.command';
 
 @CommandHandler(CreateUserAndInKeycloakCommand)
