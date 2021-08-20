@@ -1,11 +1,11 @@
 import { isUUID } from 'class-validator';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SentWelcomeMailToUserCommand } from '../impls/sent-welcome-mail-user.command';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from '../../users.repository';
 import { ConfigService } from '@nestjs/config';
-import { sendEmail } from 'src/common/utils';
+import { sendEmail } from '../../../common/utils';
 import { Knex } from 'knex';
-import { KNEX_CONNECTION } from 'src/knex-connection/knex-connection.provider';
+import { KNEX_CONNECTION } from '../../../knex-connection/knex-connection.provider';
 import { Inject } from '@nestjs/common';
 
 @CommandHandler(SentWelcomeMailToUserCommand)

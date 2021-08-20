@@ -1,6 +1,6 @@
 import { HttpModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { configuration } from 'src/configuration';
+import { configuration } from '../configuration';
 import { KeycloakRealmService } from './keycloak-realm.service';
 import { KeycloakUserService } from './keycloak-user.service';
 

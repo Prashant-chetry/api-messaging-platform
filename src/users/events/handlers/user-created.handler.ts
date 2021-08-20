@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from '../../users.repository';
 import { UserCreatedEvent } from '../imlps/user-created.event';
 
 @EventsHandler(UserCreatedEvent)
