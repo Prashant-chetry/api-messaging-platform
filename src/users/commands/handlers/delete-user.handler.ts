@@ -1,3 +1,4 @@
+import { UserDeletedEvent } from './../../events/imlps/user-deleted.event';
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
@@ -17,7 +18,7 @@ export class DeleteUserCommandHandler
       throw new BadRequestException('Invalid user');
     }
     const resp = await this.usersRepository.deleteUser(command.id);
-    //! call an event to delete all the user related things
+    this.eventBus.publish(new UserDeletedEvent(command.id, command.by.id));
     return resp;
   }
 }

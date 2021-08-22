@@ -7,6 +7,7 @@ import {
   Get,
   BadRequestException,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
@@ -17,7 +18,8 @@ import { CreateUserUsingKeycloakId } from './commands/impls/create-user.command'
 import { DeleteUserCommand } from './commands/impls/delete-user.command';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { GetUserQuery } from './queries/imples/get-user.query';
-
+import { Request as ExpressRequest } from 'express';
+import { UserDataDTO } from './dto/get-user.dto';
 /**
  * Controller layer for user operation
  */
@@ -47,11 +49,16 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<DeletedResponseDTO> {
+  @UseGuards(KeycloakAuthGuard)
+  async delete(
+    @Param('id') id: string,
+    @Request() req: ExpressRequest,
+  ): Promise<DeletedResponseDTO> {
     if (!isUUID(id)) {
       throw new BadRequestException('Invalid user');
     }
-    return this.commandBus.execute(new DeleteUserCommand(id));
+    const user: UserDataDTO = req['user'];
+    return this.commandBus.execute(new DeleteUserCommand(id, user));
   }
 
   @Get(':id')
