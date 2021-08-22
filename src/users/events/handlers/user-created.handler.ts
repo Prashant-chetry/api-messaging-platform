@@ -11,8 +11,8 @@ export class UserCreatedEventHandler
   constructor(private readonly userRepository: UsersRepository) {
     this._logger = new Logger('UserCreatedEventHandler');
   }
-  async handle(event: UserCreatedEvent) {
+  async handle(event: UserCreatedEvent): Promise<void> {
     const user = await this.userRepository.getUserById(event.userId);
-    this._logger.log(user);
+    this._logger.log(`user is created with id: ${user.data.id}`);
   }
 }
