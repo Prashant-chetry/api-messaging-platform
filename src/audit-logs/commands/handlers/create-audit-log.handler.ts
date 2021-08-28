@@ -3,6 +3,9 @@ import { CreatedResponseDTO } from '../../../common/dto';
 import { AuditLogRepository } from '../../audit-log.repository';
 import { CreateAuditLogCommand } from '../impls/create-audit-log.command';
 
+/**
+ * Command handler for creating audit(change)-log
+ */
 @CommandHandler(CreateAuditLogCommand)
 export class CreateAuditLogCommandHandler
   implements ICommandHandler<CreateAuditLogCommand>
