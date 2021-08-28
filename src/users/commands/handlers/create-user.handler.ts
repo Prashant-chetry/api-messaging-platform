@@ -1,7 +1,8 @@
-import { BadRequestException, Logger } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { isUUID } from 'class-validator';
+import { CreatedResponseDTO } from 'src/common/dto';
 import { KeycloakUserService } from '../../../keycloak-managment/keycloak-user.service';
 import { UserCreatedEvent } from '../../events/imlps';
 import { UsersRepository } from '../../users.repository';
@@ -21,7 +22,9 @@ export class CreateUserUsingKeycloakIdCommandHandler
   ) {
     this._realm = this.configService.get<string>('KEYCLOAK_REALM_NAME');
   }
-  async execute(command: CreateUserUsingKeycloakId) {
+  async execute(
+    command: CreateUserUsingKeycloakId,
+  ): Promise<CreatedResponseDTO> {
     if (!isUUID(command.keycloakId)) {
       throw new BadRequestException('Invalid keycloak id');
     }

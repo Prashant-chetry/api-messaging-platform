@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
@@ -8,27 +9,27 @@ import {
 import { MobileWithCode } from '../../common/dto/index';
 
 export class CreateUserDTO {
+  @ApiProperty()
   @IsString({ message: 'Please enter a valid name' })
   @IsNotEmpty({ message: 'Please enter a valid name' })
-  // @ApiProperty()
   firstName: string;
 
-  // @ApiProperty()
+  @ApiProperty()
   @IsString({ message: 'Please enter a valid name' })
   @IsNotEmpty({ message: 'Please enter a valid name' })
   lastName: string;
 
-  // @ApiPropertyOptional()
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString({ message: 'Please enter a valid name' })
   middleName?: string;
 
-  // @ApiPropertyOptional({ type: MobileWithCode })
+  @ApiPropertyOptional({ type: MobileWithCode })
   @IsOptional()
   @ValidateNested()
   mobile?: MobileWithCode;
 
-  // @ApiProperty()
+  @ApiProperty()
   @IsEmail({}, { message: 'Please enter a valid email' })
   email: string;
 }

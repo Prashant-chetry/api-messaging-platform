@@ -20,9 +20,21 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { GetUserQuery } from './queries/imples/get-user.query';
 import { Request as ExpressRequest } from 'express';
 import { UserDataDTO } from './dto/get-user.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 /**
  * Controller layer for user operation
  */
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('v1/users')
 export class UsersController {
   /**
@@ -35,7 +47,12 @@ export class UsersController {
   ) {}
 
   @Post(':id/keycloak')
-  async createUsingKeycloakId(@Param('id') keycloakId: string) {
+  @ApiCreatedResponse({ type: CreatedResponseDTO })
+  @ApiConflictResponse()
+  @ApiBadRequestResponse()
+  async createUsingKeycloakId(
+    @Param('id') keycloakId: string,
+  ): Promise<CreatedResponseDTO> {
     if (!isUUID(keycloakId)) {
       throw new BadRequestException('Invalid keycloak id');
     }
@@ -44,11 +61,17 @@ export class UsersController {
   }
 
   @Post()
+  @ApiCreatedResponse({ type: CreatedResponseDTO })
+  @ApiConflictResponse()
+  @ApiBody({ type: CreateUserDTO })
   async create(@Body() body: CreateUserDTO): Promise<CreatedResponseDTO> {
     return this.commandBus.execute(new CreateUserAndInKeycloakCommand(body));
   }
 
   @Delete(':id')
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
   @UseGuards(KeycloakAuthGuard)
   async delete(
     @Param('id') id: string,
@@ -62,6 +85,9 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
+  @ApiBadRequestResponse()
   @UseGuards(KeycloakAuthGuard)
   async getUser(@Param('id') id: string) {
     if (!isUUID(id)) {
